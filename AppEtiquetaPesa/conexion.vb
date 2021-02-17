@@ -3,12 +3,24 @@ Imports System.Data.SqlClient
 Imports AppEtiquetaPesa
 Imports System.Data.OleDb
 Imports System.IO.Ports.SerialPort
+Imports IntegracionEnviame
+Imports Newtonsoft
 
 Module conexion
 
     Public conexion As SqlConnection
     Public enunciado As SqlCommand
     Public respuesta As SqlDataReader
+    Public apiKeyEnviame As String = "7d066821f33647851bffb8802bf81113"
+    Public urlEnviame As String = "https://stage.api.enviame.io/api/s2/v2/"
+    Public compEnviame As Integer = 620
+    Public oOperations, oRequest, oResponse, oOrden, oDestino, oShippingOrigin, oCarrier, oCustomer, oHomeAddress, oDeliveryAddress, oShippingDestination
+    Public errorCode As Integer
+    Public errorMsg As String
+    Public uriLabel As String
+    Public pesoTotalEnv As Decimal = 5
+    Public volumenTotal As Decimal = 10
+    Public URL As String = "https://storage.googleapis.com/dev-carrier-deliveries/202101/1558370/5943-label.pdf"
 
     Sub Abrir()
         Try
@@ -543,7 +555,83 @@ Module conexion
         conexion.Close()
     End Sub
 
-    ''''''''''''''''''''''''''''''''''''''''''''TUBEXA'''''''''''''''''''''''''''''''''''''''''''''''''''
+    Sub APIenv()
+
+        oOperations = New IntegracionEnviame.API.Operaciones(apiKeyEnviame, urlEnviame, compEnviame)
+        oRequest = New IntegracionEnviame.Schema.Requests.CrearEnvioRequest()
+        oOrden = New IntegracionEnviame.Schema.Requests.Orden()
+        oDestino = New IntegracionEnviame.Schema.Requests.Destino()
+        oShippingOrigin = New IntegracionEnviame.Schema.Request.ShippingOrigin()
+        oCarrier = New IntegracionEnviame.Schema.Request.Carrier()
+        oCustomer = New IntegracionEnviame.Schema.Request.Customer()
+        oHomeAddress = New IntegracionEnviame.Schema.Request.HomeAddress()
+        oDeliveryAddress = New IntegracionEnviame.Schema.Request.DeliveryAddress()
+        oShippingDestination = New IntegracionEnviame.Schema.Request.ShippingDetination()
+
+        Try
+            '' Orden
+            oOrden.set_CantidadBultos(5)
+            oOrden.set_CodBodegaOrigen("cod_bod123")
+            oOrden.set_DescripcionContenido("Quincalleria")
+            oOrden.set_IdReferencia("22")
+            oOrden.set_PesoTotal(pesoTotalEnv)
+            oOrden.set_Precio(1200)
+            oOrden.set_VolumenTotal(volumenTotal)
+            '' Destino
+            oDestino.set_Comuna("SANTIAGO")
+            oDestino.set_DireccionCompleta("Alameda 1460, piso 8")
+            oDestino.set_EmailReceptor("ivan.jerez@gmail.com")
+            oDestino.set_NombreReceptor("Joaquin Jerez Martinez")
+            oDestino.set_Informacion("Dejar en concerjería")
+            oDestino.set_TelefonoReceptor("223557050")
+            ''
+            oRequest.set_Carrier("")
+            oRequest.set_Destino(oDestino)
+            oRequest.set_Orden(oOrden)
+            '' Create delivery
+            oResponse = oOperations.CrearEnvio(oRequest)
+            errorCode = oResponse.get_ErrorCode()
+
+            If (errorCode <> -1) Then
+                uriLabel = oResponse.get_EtiquetaPdf()
+                MessageBox.Show(uriLabel)
+                '' Donwload file
+                My.Computer.Network.DownloadFile(URL, "C:\dscpdf\etiqueta.pdf")
+
+                Dim psi As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo()
+
+                psi.UseShellExecute = True
+                psi.Verb = "print"
+                psi.FileName = "C:\dscpdf\etiqueta.pdf"
+                psi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                psi.ErrorDialog = False
+                psi.Arguments = "/p"
+
+                Dim p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)
+                p.WaitForInputIdle()
+
+
+            Else
+
+                errorMsg = oResponse.get_ErrorDescription()
+                MessageBox.Show(errorMsg)
+            End If
+            ''
+            ''MessageBox.Show("Termine")
+
+            '' Eliminamos etiqueta temporal
+            ''Dim ArchivoBorrar As String
+            ''ArchivoBorrar = "C:\dscpdf\etiqueta.pdf"
+            'comprobamos que el archivo existe
+            ''If System.IO.File.Exists(ArchivoBorrar) = True Then
+            ''System.IO.File.Delete(ArchivoBorrar)
+            ''End If
+            ''Catch ex As Exception
+            ''MessageBox.Show("Error")
+            ''End Try
+    End Sub
+
+
 
 
 
