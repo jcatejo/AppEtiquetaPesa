@@ -555,7 +555,7 @@ Module conexion
         conexion.Close()
     End Sub
 
-    Sub APIenv()
+    Sub APIenv(ByVal numBultos As Integer, ByVal codBodegaOrigen As String, ByVal seccion As String, ByVal idReferencia As String, ByVal pesoTotal As Double, ByVal precio As Double, ByVal volumenTotal As Double, ByVal comunaDestino As String, ByVal direccion As String, ByVal emailReceptor As String, ByVal nombreReceptor As String, ByVal comentario As String, ByVal contacto As String)
 
         oOperations = New IntegracionEnviame.API.Operaciones(apiKeyEnviame, urlEnviame, compEnviame)
         oRequest = New IntegracionEnviame.Schema.Requests.CrearEnvioRequest()
@@ -626,9 +626,9 @@ Module conexion
             ''If System.IO.File.Exists(ArchivoBorrar) = True Then
             ''System.IO.File.Delete(ArchivoBorrar)
             ''End If
-            ''Catch ex As Exception
-            ''MessageBox.Show("Error")
-            ''End Try
+        Catch ex As Exception
+            MessageBox.Show("Error")
+        End Try
     End Sub
 
 
