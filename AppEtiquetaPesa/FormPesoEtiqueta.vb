@@ -46,7 +46,6 @@ Public Class FormPesoEtiqueta
     End Sub
 
     Private Sub btnImprimir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnImprimir.Click
-
         Dim result As Decimal
         Dim redond As Decimal
         Format(redond, "##,##0.00")
@@ -59,10 +58,26 @@ Public Class FormPesoEtiqueta
                 'INSERTA REGISTRO EN AX_MAINDB
                 numEtiqueta()
                 contador = contador + 1
-
                 contadorEtiqueta = contadorEtiqueta + 1
                 lblcont.Text = Convert.ToString(contador).ToString()
-                Dim pathExternalLabel = "C:\dscpdf\" + Me.lbldct.Text + ".pdf"
+                Dim pathExternalLabel As String
+                pathExternalLabel = ""
+
+                If Me.lbldat.Text = "DCO" Then
+                    pathExternalLabel = "\\serv-bkp1\EtiquetaExterna\DCO\" + Me.lbldct.Text + ".pdf"
+                ElseIf Me.lbldat.Text = "CMD" Then
+                    pathExternalLabel = "\\serv-bkp1\EtiquetaExterna\CMD\" + Me.lbldct.Text + ".pdf"
+                ElseIf Me.lbldat.Text = "CWD" Then
+                    pathExternalLabel = "\\serv-bkp1\EtiquetaExterna\CWD\" + Me.lbldct.Text + ".pdf"
+                ElseIf Me.lbldat.Text = "SII" Then
+                    pathExternalLabel = "\\serv-bkp1\EtiquetaExterna\SII\" + Me.lbldct.Text + ".pdf"
+                ElseIf Me.lbldat.Text = "TBD" Then
+                    pathExternalLabel = "\\serv-bkp1\EtiquetaExterna\TBD\" + Me.lbldct.Text + ".pdf"
+                Else
+                    MessageBox.Show("Error, por favor contactarse con el administrador")
+                End If
+
+                'Inserta registro en en BD
                 InsertLabel(Me.contador, Me.lblpck.Text, Me.lbldct.Text, Me.lblrut.Text, Me.lblcli.Text, Me.lbldir.Text, Me.lblcom.Text, Me.lblciu.Text, Me.lblreg.Text, Me.lblsec.Text, Me.lbltrans.Text, Replace(Me.txbPeso.Text, ",", "."), Me.lblobs.Text, Me.lbldat.Text, Me.contador, Me.lblpos.Text, Me.lblfralm.Text, Me.lbltoalm.Text, Form1.cmbEmpleado.Text, pathExternalLabel)
 
                 'CALCULA PESO TOTAL DE LAS ETIQUETAS EMITIDAS
@@ -110,7 +125,7 @@ Public Class FormPesoEtiqueta
             MessageBox.Show("Debe ingresar un número")
             txbPeso.Text = "0.00"
         End If
-        
+
     End Sub
 
     Private Sub SerialPort1_DataReceived(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived

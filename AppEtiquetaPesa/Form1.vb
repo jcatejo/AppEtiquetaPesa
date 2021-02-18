@@ -68,19 +68,15 @@
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         Try
-
             If cmbEmpresa.Text = String.Empty Then
                 MsgBox("Debe seleccionar Empresa")
             Else
                 Me.Hide()
                 FormReImpresion.Show()
-
             End If
-
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical)
         End Try
-
     End Sub
 
     Private Sub cmbEmpresa_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbEmpresa.SelectedIndexChanged
@@ -127,6 +123,19 @@
 
     Private Sub cmbEmpleado_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbEmpleado.SelectedIndexChanged
         Me.txbPicking.Focus()
+    End Sub
+
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Try
+            If cmbEmpresa.Text = String.Empty Then
+                MsgBox("Debe seleccionar Empresa")
+            Else
+                Me.Hide()
+                FormCarrierLabel.Show()
+            End If
+        Catch ex As Exception
+            MsgBox(ex.Message, MsgBoxStyle.Critical)
+        End Try
     End Sub
 
 End Class

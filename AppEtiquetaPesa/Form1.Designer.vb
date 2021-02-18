@@ -51,6 +51,7 @@ Partial Class Form1
         Me.lblTransportista = New System.Windows.Forms.Label
         Me.lblPicking = New System.Windows.Forms.Label
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.Button3 = New System.Windows.Forms.Button
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.SuspendLayout()
@@ -58,6 +59,7 @@ Partial Class Form1
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.NavajoWhite
+        Me.Panel1.Controls.Add(Me.Button3)
         Me.Panel1.Controls.Add(Me.Lblgab)
         Me.Panel1.Controls.Add(Me.cmbEmpleado)
         Me.Panel1.Controls.Add(Me.Label2)
@@ -74,7 +76,7 @@ Partial Class Form1
         Me.Panel1.Controls.Add(Me.lblEmpresa)
         Me.Panel1.Location = New System.Drawing.Point(0, 1)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(705, 132)
+        Me.Panel1.Size = New System.Drawing.Size(705, 175)
         Me.Panel1.TabIndex = 0
         '
         'Lblgab
@@ -93,7 +95,7 @@ Partial Class Form1
         Me.cmbEmpleado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbEmpleado.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmbEmpleado.FormattingEnabled = True
-        Me.cmbEmpleado.Location = New System.Drawing.Point(462, 98)
+        Me.cmbEmpleado.Location = New System.Drawing.Point(116, 141)
         Me.cmbEmpleado.Name = "cmbEmpleado"
         Me.cmbEmpleado.Size = New System.Drawing.Size(230, 24)
         Me.cmbEmpleado.TabIndex = 12
@@ -101,7 +103,7 @@ Partial Class Form1
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(388, 103)
+        Me.Label2.Location = New System.Drawing.Point(14, 141)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(71, 20)
         Me.Label2.TabIndex = 11
@@ -109,9 +111,9 @@ Partial Class Form1
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(489, 42)
+        Me.Button2.Location = New System.Drawing.Point(438, 46)
         Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(203, 29)
+        Me.Button2.Size = New System.Drawing.Size(254, 37)
         Me.Button2.TabIndex = 10
         Me.Button2.Text = "Re-Impresión Etiqueta"
         Me.Button2.UseVisualStyleBackColor = True
@@ -229,15 +231,15 @@ Partial Class Form1
         Me.Panel2.Controls.Add(Me.lblOvservacion)
         Me.Panel2.Controls.Add(Me.lblTransportista)
         Me.Panel2.Controls.Add(Me.lblPicking)
-        Me.Panel2.Location = New System.Drawing.Point(0, 134)
+        Me.Panel2.Location = New System.Drawing.Point(0, 172)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(704, 422)
+        Me.Panel2.Size = New System.Drawing.Size(704, 384)
         Me.Panel2.TabIndex = 1
         '
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(14, 269)
+        Me.Label3.Location = New System.Drawing.Point(3, 392)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(121, 20)
         Me.Label3.TabIndex = 10
@@ -246,7 +248,7 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(227, 333)
+        Me.Button1.Location = New System.Drawing.Point(232, 285)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(232, 62)
         Me.Button1.TabIndex = 9
@@ -255,7 +257,7 @@ Partial Class Form1
         '
         'txbCantEtiquetas
         '
-        Me.txbCantEtiquetas.Location = New System.Drawing.Point(575, 50)
+        Me.txbCantEtiquetas.Location = New System.Drawing.Point(573, 42)
         Me.txbCantEtiquetas.Name = "txbCantEtiquetas"
         Me.txbCantEtiquetas.Size = New System.Drawing.Size(72, 26)
         Me.txbCantEtiquetas.TabIndex = 5
@@ -263,7 +265,7 @@ Partial Class Form1
         'lblCantEtiq
         '
         Me.lblCantEtiq.AutoSize = True
-        Me.lblCantEtiq.Location = New System.Drawing.Point(429, 50)
+        Me.lblCantEtiq.Location = New System.Drawing.Point(434, 45)
         Me.lblCantEtiq.Name = "lblCantEtiq"
         Me.lblCantEtiq.Size = New System.Drawing.Size(109, 20)
         Me.lblCantEtiq.TabIndex = 7
@@ -273,7 +275,7 @@ Partial Class Form1
         '
         Me.cmbTransporte.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmbTransporte.FormattingEnabled = True
-        Me.cmbTransporte.Location = New System.Drawing.Point(135, 116)
+        Me.cmbTransporte.Location = New System.Drawing.Point(140, 111)
         Me.cmbTransporte.Name = "cmbTransporte"
         Me.cmbTransporte.Size = New System.Drawing.Size(213, 24)
         Me.cmbTransporte.TabIndex = 6
@@ -281,7 +283,7 @@ Partial Class Form1
         'txbObservacion
         '
         Me.txbObservacion.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txbObservacion.Location = New System.Drawing.Point(135, 191)
+        Me.txbObservacion.Location = New System.Drawing.Point(140, 186)
         Me.txbObservacion.MaxLength = 100
         Me.txbObservacion.Multiline = True
         Me.txbObservacion.Name = "txbObservacion"
@@ -290,7 +292,7 @@ Partial Class Form1
         '
         'txbPicking
         '
-        Me.txbPicking.Location = New System.Drawing.Point(135, 44)
+        Me.txbPicking.Location = New System.Drawing.Point(140, 39)
         Me.txbPicking.Name = "txbPicking"
         Me.txbPicking.Size = New System.Drawing.Size(213, 26)
         Me.txbPicking.TabIndex = 4
@@ -298,7 +300,7 @@ Partial Class Form1
         'lblOvservacion
         '
         Me.lblOvservacion.AutoSize = True
-        Me.lblOvservacion.Location = New System.Drawing.Point(14, 197)
+        Me.lblOvservacion.Location = New System.Drawing.Point(19, 192)
         Me.lblOvservacion.Name = "lblOvservacion"
         Me.lblOvservacion.Size = New System.Drawing.Size(108, 20)
         Me.lblOvservacion.TabIndex = 3
@@ -307,7 +309,7 @@ Partial Class Form1
         'lblTransportista
         '
         Me.lblTransportista.AutoSize = True
-        Me.lblTransportista.Location = New System.Drawing.Point(14, 124)
+        Me.lblTransportista.Location = New System.Drawing.Point(19, 119)
         Me.lblTransportista.Name = "lblTransportista"
         Me.lblTransportista.Size = New System.Drawing.Size(115, 20)
         Me.lblTransportista.TabIndex = 2
@@ -316,7 +318,7 @@ Partial Class Form1
         'lblPicking
         '
         Me.lblPicking.AutoSize = True
-        Me.lblPicking.Location = New System.Drawing.Point(14, 47)
+        Me.lblPicking.Location = New System.Drawing.Point(19, 42)
         Me.lblPicking.Name = "lblPicking"
         Me.lblPicking.Size = New System.Drawing.Size(66, 20)
         Me.lblPicking.TabIndex = 1
@@ -325,6 +327,15 @@ Partial Class Form1
         'Timer1
         '
         Me.Timer1.Enabled = True
+        '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(438, 115)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(254, 33)
+        Me.Button3.TabIndex = 14
+        Me.Button3.Text = "Etiqueta Carrier Ext."
+        Me.Button3.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -372,5 +383,6 @@ Partial Class Form1
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents Lblgab As System.Windows.Forms.Label
+    Friend WithEvents Button3 As System.Windows.Forms.Button
 
 End Class

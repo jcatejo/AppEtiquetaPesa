@@ -16,7 +16,7 @@ Module conexion
     Public compEnviame As Integer = 620
     Public oOperations, oRequest, oResponse, oOrden, oDestino, oShippingOrigin, oCarrier, oCustomer, oHomeAddress, oDeliveryAddress, oShippingDestination
     Public errorCode As Integer
-    Public errorMsg As String
+    Public errorMsg, oComuna, oDireccion, oCliente, oMail, oBodOrigen, oSeccion, oId, oTelefono, oInformacion, dataarea As String
     Public uriLabel As String
     Public pesoTotal As Decimal = 5
     Public volumenTotal As Decimal = 10
@@ -557,6 +557,16 @@ Module conexion
     End Sub
 
     Sub APIenv()
+        'oComuna, oDireccion, oCliente, oMail, oBodOrigen, oSeccion, oId, oTelefono, oInformacion 
+        oComuna = FormPesoEtiqueta.lblcom.Text
+        oDireccion = FormPesoEtiqueta.lbldir.Text
+        oCliente = FormPesoEtiqueta.lblcli.Text
+        oMail = "maildeprueba@ducasse.cl"
+        oBodOrigen = Form1.cmbBodega.Text
+        oSeccion = FormPesoEtiqueta.lblsec.Text
+        oId = FormPesoEtiqueta.lblb.Text
+        oTelefono = "223557000"
+        oInformacion = Form1.txbObservacion.Text
 
         oOperations = New IntegracionEnviame.API.Operaciones(apiKeyEnviame, urlEnviame, compEnviame)
         oRequest = New IntegracionEnviame.Schema.Requests.CrearEnvioRequest()
@@ -579,12 +589,12 @@ Module conexion
             oOrden.set_Precio(1200)
             oOrden.set_VolumenTotal(volumenTotal)
             '' Destino
-            oDestino.set_Comuna("SANTIAGO")
-            oDestino.set_DireccionCompleta("Alameda 1460, piso 8")
-            oDestino.set_EmailReceptor("ivan.jerez@gmail.com")
-            oDestino.set_NombreReceptor("Joaquin Jerez Martinez")
-            oDestino.set_Informacion("Dejar en concerjería")
-            oDestino.set_TelefonoReceptor("223557050")
+            oDestino.set_Comuna(oComuna)
+            oDestino.set_DireccionCompleta(oDireccion)
+            oDestino.set_EmailReceptor(oMail)
+            oDestino.set_NombreReceptor(oCliente)
+            oDestino.set_Informacion(oInformacion)
+            oDestino.set_TelefonoReceptor(oTelefono)
             ''
             oRequest.set_Carrier("")
             oRequest.set_Destino(oDestino)
@@ -595,9 +605,23 @@ Module conexion
             If (errorCode <> -1) Then
 
                 uriLabel = oResponse.get_EtiquetaPdf()
-                MessageBox.Show(uriLabel)
+                'MessageBox.Show(uriLabel)
                 '' Donwload file
-                My.Computer.Network.DownloadFile(URL, "C:\dscpdf\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
+
+                If FormPesoEtiqueta.lbldat.Text = "DCO" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
+                ElseIf FormPesoEtiqueta.lbldat.Text = "CMD" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\CMD\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
+                ElseIf FormPesoEtiqueta.lbldat.Text = "CWD" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\CWD\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
+                ElseIf FormPesoEtiqueta.lbldat.Text = "SII" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\SII\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
+                ElseIf FormPesoEtiqueta.lbldat.Text = "TBD" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\TBD\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
+                Else
+                    MessageBox.Show("Error, por favor contactarse con el administrador")
+                End If
+
             Else
                 errorMsg = oResponse.get_ErrorDescription()
                 MessageBox.Show(errorMsg)
@@ -640,16 +664,31 @@ Module conexion
 
             psi.UseShellExecute = True
             psi.Verb = "print"
-            psi.FileName = "C:\dscpdf\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+
+            '' Abre archivo creado por ws externo
+            If FormPesoEtiqueta.lbldat.Text = "DCO" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf FormPesoEtiqueta.lbldat.Text = "CMD" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CMD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf FormPesoEtiqueta.lbldat.Text = "CWD" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CWD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf FormPesoEtiqueta.lbldat.Text = "SII" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\SII\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf FormPesoEtiqueta.lbldat.Text = "TBD" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\TBD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            Else
+                MessageBox.Show("Error, por favor contactarse con el administrador")
+            End If
+
+            'psi.FileName = "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
             psi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
             psi.ErrorDialog = False
             psi.Arguments = "/p"
-
             Dim p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)
             p.WaitForInputIdle()
 
         Catch ex As Exception
-            MessageBox.Show("Etiqueta no generada")
+            MessageBox.Show("Etiqueta externa no generada")
         End Try
        
     End Sub
@@ -720,6 +759,134 @@ Module conexion
         FormPesoEtiqueta.lblfec.Text = "2018/12/13"
         FormPesoEtiqueta.txbPeso.Text = "0.00"
     End Sub
+
+    Sub generaEtiquetaCarrier()
+        'oComuna, oDireccion, oCliente, oMail, oBodOrigen, oSeccion, oId, oTelefono, oInformacion 
+        oComuna = FormPesoEtiqueta.lblcom.Text
+        oDireccion = FormPesoEtiqueta.lbldir.Text
+        oCliente = FormPesoEtiqueta.lblcli.Text
+        oMail = "maildeprueba@ducasse.cl"
+        oBodOrigen = Form1.cmbBodega.Text
+        oSeccion = FormPesoEtiqueta.lblsec.Text
+        oId = FormPesoEtiqueta.lblb.Text
+        oTelefono = "223557000"
+        oInformacion = Form1.txbObservacion.Text
+
+        oOperations = New IntegracionEnviame.API.Operaciones(apiKeyEnviame, urlEnviame, compEnviame)
+        oRequest = New IntegracionEnviame.Schema.Requests.CrearEnvioRequest()
+        oOrden = New IntegracionEnviame.Schema.Requests.Orden()
+        oDestino = New IntegracionEnviame.Schema.Requests.Destino()
+        oShippingOrigin = New IntegracionEnviame.Schema.Request.ShippingOrigin()
+        oCarrier = New IntegracionEnviame.Schema.Request.Carrier()
+        oCustomer = New IntegracionEnviame.Schema.Request.Customer()
+        oHomeAddress = New IntegracionEnviame.Schema.Request.HomeAddress()
+        oDeliveryAddress = New IntegracionEnviame.Schema.Request.DeliveryAddress()
+        oShippingDestination = New IntegracionEnviame.Schema.Request.ShippingDetination()
+
+        Try
+            '' Orden
+            oOrden.set_CantidadBultos(5)
+            oOrden.set_CodBodegaOrigen("cod_bod123")
+            oOrden.set_DescripcionContenido("Quincalleria")
+            oOrden.set_IdReferencia("22")
+            oOrden.set_PesoTotal(pesoTotal)
+            oOrden.set_Precio(1200)
+            oOrden.set_VolumenTotal(volumenTotal)
+            '' Destino
+            oDestino.set_Comuna(oComuna)
+            oDestino.set_DireccionCompleta(oDireccion)
+            oDestino.set_EmailReceptor(oMail)
+            oDestino.set_NombreReceptor(oCliente)
+            oDestino.set_Informacion(oInformacion)
+            oDestino.set_TelefonoReceptor(oTelefono)
+            ''
+            oRequest.set_Carrier("")
+            oRequest.set_Destino(oDestino)
+            oRequest.set_Orden(oOrden)
+            '' Create delivery
+            oResponse = oOperations.CrearEnvio(oRequest)
+            errorCode = oResponse.get_ErrorCode()
+            If (errorCode <> -1) Then
+
+                uriLabel = oResponse.get_EtiquetaPdf()
+                'MessageBox.Show(uriLabel)
+                '' Donwload file
+
+                If dataarea = "DCO" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\DCO\" + FormGenerateCarrierLabel.TextBox1.Text + ".pdf")
+                ElseIf dataarea = "CMD" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\CMD\" + FormGenerateCarrierLabel.TextBox1.Text + ".pdf")
+                ElseIf dataarea = "CWD" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\CWD\" + FormGenerateCarrierLabel.TextBox1.Text + ".pdf")
+                ElseIf dataarea = "SII" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\SII\" + FormGenerateCarrierLabel.TextBox1.Text + ".pdf")
+                ElseIf dataarea = "TBD" Then
+                    My.Computer.Network.DownloadFile(URL, "\\serv-bkp1\EtiquetaExterna\TBD\" + FormGenerateCarrierLabel.TextBox1.Text + ".pdf")
+                Else
+                    MessageBox.Show("Error, por favor contactarse con el administrador")
+                End If
+
+            Else
+                errorMsg = oResponse.get_ErrorDescription()
+                MessageBox.Show(errorMsg)
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("Etiqueta ya existe o sin acceso a carpeta de destino")
+        End Try
+    End Sub
+
+    Sub getDataareaid()
+        If Form1.cmbEmpresa.Text = "DUCASSE COMERCIAL" Then
+            dataarea = "DCO"
+        ElseIf Form1.cmbEmpresa.Text = "DAP DUCASSE DISEÑO" Then
+            dataarea = "CMD"
+        ElseIf Form1.cmbEmpresa.Text = "COLOWALL DISEÑO" Then
+            dataarea = "CWD"
+        ElseIf Form1.cmbEmpresa.Text = "STOCK INSUMOS INDUSTRIALES" Then
+            dataarea = "SII"
+        ElseIf Form1.cmbEmpresa.Text = "TUBEXA INDUSTRIAL" Then
+            dataarea = "TBD"
+        End If
+    End Sub
+
+
+    Sub reImprimeEtiquetaCarrier()
+        Try
+            Dim psi As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo()
+
+            psi.UseShellExecute = True
+            psi.Verb = "print"
+
+            '' Abre archivo creado por ws externo
+            If dataarea = "DCO" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf dataarea = "CMD" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CMD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf dataarea = "CWD" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CWD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf dataarea = "SII" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\SII\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            ElseIf dataarea = "TBD" Then
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\TBD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            Else
+                MessageBox.Show("Error, por favor contactarse con el administrador")
+            End If
+
+            'psi.FileName = "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            psi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            psi.ErrorDialog = False
+            psi.Arguments = "/p"
+            Dim p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)
+            p.WaitForInputIdle()
+
+        Catch ex As Exception
+            MessageBox.Show("Etiqueta externa no generada")
+        End Try
+
+    End Sub
+
+
 
 End Module
 
