@@ -18,7 +18,7 @@ Module conexion
     Public errorCode As Integer
     Public errorMsg As String
     Public uriLabel As String
-    Public pesoTotalEnv As Decimal = 5
+    Public pesoTotal As Decimal = 5
     Public volumenTotal As Decimal = 10
     Public URL As String = "https://storage.googleapis.com/dev-carrier-deliveries/202101/1558370/5943-label.pdf"
 
@@ -340,13 +340,13 @@ Module conexion
         conexion.Close()
     End Sub
 
-    Sub InsertLabel(ByVal LabelID As Integer, ByVal PickingRouteId As String, ByVal TransrefId As String, ByVal Customer As String, ByVal DeliveryName As String, ByVal DeliveryAddress As String, ByVal AddressCounty As String, ByVal AddressCity As String, ByVal AddressState As String, ByVal Dimension_4 As String, ByVal DriverName As String, ByVal Weight As Double, ByVal Comment As String, ByVal Dataareaid As String, ByVal RecID As String, ByVal Dimension_ As String, ByVal InventLocationId As String, ByVal InventLocationIdTo As String, ByVal Responsible As String)
+    Sub InsertLabel(ByVal LabelID As Integer, ByVal PickingRouteId As String, ByVal TransrefId As String, ByVal Customer As String, ByVal DeliveryName As String, ByVal DeliveryAddress As String, ByVal AddressCounty As String, ByVal AddressCity As String, ByVal AddressState As String, ByVal Dimension_4 As String, ByVal DriverName As String, ByVal Weight As Double, ByVal Comment As String, ByVal Dataareaid As String, ByVal RecID As String, ByVal Dimension_ As String, ByVal InventLocationId As String, ByVal InventLocationIdTo As String, ByVal Responsible As String, ByVal PathExternalLabel As String)
 
         Try
             conexion.Close()
             conexion.Open()
 
-            enunciado = New SqlCommand("spu_insertLabel1", conexion)
+            enunciado = New SqlCommand("spu_insertLabel2", conexion)
             enunciado.CommandType = CommandType.StoredProcedure
 
             With enunciado.Parameters
@@ -369,6 +369,7 @@ Module conexion
                 .AddWithValue("InventLocationId", InventLocationId)
                 .AddWithValue("InventLocationIdTo", InventLocationIdTo)
                 .AddWithValue("Responsible", Responsible)
+                .AddWithValue("PathExternalLabel", PathExternalLabel)
 
             End With
             enunciado.ExecuteNonQuery()
@@ -555,7 +556,7 @@ Module conexion
         conexion.Close()
     End Sub
 
-    Sub APIenv(ByVal numBultos As Integer, ByVal codBodegaOrigen As String, ByVal seccion As String, ByVal idReferencia As String, ByVal pesoTotal As Double, ByVal precio As Double, ByVal volumenTotal As Double, ByVal comunaDestino As String, ByVal direccion As String, ByVal emailReceptor As String, ByVal nombreReceptor As String, ByVal comentario As String, ByVal contacto As String)
+    Sub APIenv()
 
         oOperations = New IntegracionEnviame.API.Operaciones(apiKeyEnviame, urlEnviame, compEnviame)
         oRequest = New IntegracionEnviame.Schema.Requests.CrearEnvioRequest()
@@ -574,7 +575,7 @@ Module conexion
             oOrden.set_CodBodegaOrigen("cod_bod123")
             oOrden.set_DescripcionContenido("Quincalleria")
             oOrden.set_IdReferencia("22")
-            oOrden.set_PesoTotal(pesoTotalEnv)
+            oOrden.set_PesoTotal(pesoTotal)
             oOrden.set_Precio(1200)
             oOrden.set_VolumenTotal(volumenTotal)
             '' Destino
@@ -591,49 +592,134 @@ Module conexion
             '' Create delivery
             oResponse = oOperations.CrearEnvio(oRequest)
             errorCode = oResponse.get_ErrorCode()
-
             If (errorCode <> -1) Then
+
                 uriLabel = oResponse.get_EtiquetaPdf()
                 MessageBox.Show(uriLabel)
                 '' Donwload file
-                My.Computer.Network.DownloadFile(URL, "C:\dscpdf\etiqueta.pdf")
-
-                Dim psi As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo()
-
-                psi.UseShellExecute = True
-                psi.Verb = "print"
-                psi.FileName = "C:\dscpdf\etiqueta.pdf"
-                psi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
-                psi.ErrorDialog = False
-                psi.Arguments = "/p"
-
-                Dim p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)
-                p.WaitForInputIdle()
-
-
+                My.Computer.Network.DownloadFile(URL, "C:\dscpdf\" + FormPesoEtiqueta.lbldct.Text + ".pdf")
             Else
-
                 errorMsg = oResponse.get_ErrorDescription()
                 MessageBox.Show(errorMsg)
             End If
-            ''
-            ''MessageBox.Show("Termine")
 
-            '' Eliminamos etiqueta temporal
-            ''Dim ArchivoBorrar As String
-            ''ArchivoBorrar = "C:\dscpdf\etiqueta.pdf"
-            'comprobamos que el archivo existe
-            ''If System.IO.File.Exists(ArchivoBorrar) = True Then
-            ''System.IO.File.Delete(ArchivoBorrar)
-            ''End If
         Catch ex As Exception
-            MessageBox.Show("Error")
+            MessageBox.Show("Etiqueta ya existe o sin acceso a carpeta de destino")
         End Try
     End Sub
 
+    Sub imprimeResumen()
+        'IMPRIME RESUMEN
 
+        '' If cantidad > 1 Then
+        ''MessageBox.Show("Peso Total: " & pesoStr & " Kg.", "Peso total de los bultos", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ''opcion = MessageBox.Show("Desea Imprimir resumen de etiquetas?", "Resumen", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        ''If (opcion = Windows.Forms.DialogResult.Yes) Then
+        ''last = first + cantidad - 1
+        ''Dim print2 As New ResumenBulto()
+        ''print2.imprimeresumen()
+        ''Form1.txbPicking.Focus()
+        ''Me.Close()
+        ''Form1.txbPicking.Focus()
+        ''Else
+        ''  Form1.txbPicking.Focus()
+        ''Me.Close()
+        ''Form1.txbPicking.Focus()
+        ''End If
+        ''Else
+        ''  Form1.txbPicking.Focus()
+        ''Me.Close()
+        ''Form1.txbPicking.Focus()
+        ''End If
 
+    End Sub
 
+    Sub imprimeEtiquetaExterna()
+        Try
+            Dim psi As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo()
+
+            psi.UseShellExecute = True
+            psi.Verb = "print"
+            psi.FileName = "C:\dscpdf\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+            psi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            psi.ErrorDialog = False
+            psi.Arguments = "/p"
+
+            Dim p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)
+            p.WaitForInputIdle()
+
+        Catch ex As Exception
+            MessageBox.Show("Etiqueta no generada")
+        End Try
+       
+    End Sub
+
+    Sub ReimprimeEtiquetaExterna()
+        Dim rpsi As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo()
+
+        rpsi.UseShellExecute = True
+        rpsi.Verb = "print"
+        rpsi.FileName = "C:\dscpdf\" + FormPesoEtiqueta.lblpck.Text + ".pdf"
+        rpsi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+        rpsi.ErrorDialog = False
+        rpsi.Arguments = "/p"
+
+        Dim p As System.Diagnostics.Process = System.Diagnostics.Process.Start(rpsi)
+        p.WaitForInputIdle()
+    End Sub
+
+    Sub opcionImprimirEtiquetaExterna()
+        Dim opcion As DialogResult
+        opcion = MessageBox.Show("Desea Imprimir etiquetas Externa?", "Etiqueta Carrier", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If (opcion = Windows.Forms.DialogResult.Yes) Then
+
+            imprimeEtiquetaExterna()
+            Form1.txbPicking.Focus()
+            FormPesoEtiqueta.Close()
+            Form1.txbPicking.Focus()
+        Else
+            Form1.txbPicking.Focus()
+            FormPesoEtiqueta.Close()
+            Form1.txbPicking.Focus()
+        End If
+
+    End Sub
+
+    Sub limpiaForm1()
+        Form1.txbPicking.Text = String.Empty
+        Form1.txbCantEtiquetas.Text = String.Empty
+        Form1.cmbTransporte.Text = String.Empty
+        Form1.txbObservacion.Text = String.Empty
+    End Sub
+
+    Sub limpiaVariablesFormPeso()
+        FormPesoEtiqueta.lblbod.Text = ""
+        FormPesoEtiqueta.lblciu.Text = ""
+        FormPesoEtiqueta.lblcli.Text = ""
+        FormPesoEtiqueta.lblcom.Text = ""
+        FormPesoEtiqueta.lbldir.Text = ""
+        FormPesoEtiqueta.lblloc.Text = ""
+        FormPesoEtiqueta.lblobs.Text = ""
+        FormPesoEtiqueta.lblreg.Text = ""
+        FormPesoEtiqueta.lblrut.Text = ""
+        FormPesoEtiqueta.lblsec.Text = ""
+        FormPesoEtiqueta.lbltrans.Text = ""
+        FormPesoEtiqueta.lblpos.Text = ""
+        FormPesoEtiqueta.lblfralm.Text = ""
+        FormPesoEtiqueta.lbltoalm.Text = ""
+    End Sub
+
+    Sub cargaDatosFormPeso()
+        FormPesoEtiqueta.lbldat.Text = Form1.lblDataarea.Text
+        FormPesoEtiqueta.lbltrans.Text = Form1.cmbTransporte.Text
+        FormPesoEtiqueta.lblb.Text = Form1.txbCantEtiquetas.Text
+        FormPesoEtiqueta.cantidad = Form1.txbCantEtiquetas.Text
+        FormPesoEtiqueta.lblobs.Text = Form1.txbObservacion.Text + " " + FormPesoEtiqueta.customerRef
+
+        FormPesoEtiqueta.lbla.Text = 1
+        FormPesoEtiqueta.lblfec.Text = "2018/12/13"
+        FormPesoEtiqueta.txbPeso.Text = "0.00"
+    End Sub
 
 End Module
 
