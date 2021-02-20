@@ -280,6 +280,40 @@ Module conexion
         conexion.Close()
     End Sub
 
+    Sub getdatosri()
+        Dim re As SqlDataReader
+        Dim str_emp = dataarea
+        Dim str_pv = FormGenerateCarrierLabel.TextBox1.Text
+        Dim pv As String
+        conexion.Close()
+        conexion.Open()
+
+        Try
+            Dim cmd As SqlCommand = New SqlCommand("spu_QryEtiquetaRIC", conexion)
+            cmd.CommandType = CommandType.StoredProcedure
+            cmd.Parameters.AddWithValue("@DATAAREAID", str_emp)
+            cmd.Parameters.AddWithValue("@DOCTO", str_pv)
+
+            re = cmd.ExecuteReader()
+            If re.Read() Then
+                pv = re.GetString(0).ToString()
+                oCliente = re.GetString(1).ToString()
+                oDireccion = re.GetString(2).ToString()
+                oComuna = re.GetString(3).ToString()
+                oInformacion = re.GetString(4).ToString()
+                oBodOrigen = re.GetString(5).ToString()
+                oTelefono = re.GetString(6).ToString()
+                oMail = re.GetString(7).ToString()
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.Message, MsgBoxStyle.Critical)
+        End Try
+
+        conexion.Close()
+
+    End Sub
+
     Sub getexiste()
         Dim r As SqlDataReader
         
@@ -762,15 +796,12 @@ Module conexion
 
     Sub generaEtiquetaCarrier()
         'oComuna, oDireccion, oCliente, oMail, oBodOrigen, oSeccion, oId, oTelefono, oInformacion 
-        oComuna = FormPesoEtiqueta.lblcom.Text
-        oDireccion = FormPesoEtiqueta.lbldir.Text
-        oCliente = FormPesoEtiqueta.lblcli.Text
-        oMail = "maildeprueba@ducasse.cl"
-        oBodOrigen = Form1.cmbBodega.Text
-        oSeccion = FormPesoEtiqueta.lblsec.Text
-        oId = FormPesoEtiqueta.lblb.Text
-        oTelefono = "223557000"
-        oInformacion = Form1.txbObservacion.Text
+        getdatosri()
+        'oMail = "maildeprueba@ducasse.cl"
+        'oBodOrigen = Form1.cmbBodega.Text
+        'oId = FormPesoEtiqueta.lblb.Text
+        'oTelefono = "223557000"
+        'oInformacion = Form1.txbObservacion.Text
 
         oOperations = New IntegracionEnviame.API.Operaciones(apiKeyEnviame, urlEnviame, compEnviame)
         oRequest = New IntegracionEnviame.Schema.Requests.CrearEnvioRequest()
@@ -850,7 +881,6 @@ Module conexion
         End If
     End Sub
 
-
     Sub reImprimeEtiquetaCarrier()
         Try
             Dim psi As System.Diagnostics.ProcessStartInfo = New System.Diagnostics.ProcessStartInfo()
@@ -860,15 +890,15 @@ Module conexion
 
             '' Abre archivo creado por ws externo
             If dataarea = "DCO" Then
-                psi.FileName = "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\DCO\" + FormPrintCarrierLabel.TextBox1.Text + ".pdf"
             ElseIf dataarea = "CMD" Then
-                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CMD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CMD\" + FormPrintCarrierLabel.TextBox1.Text + ".pdf"
             ElseIf dataarea = "CWD" Then
-                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CWD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\CWD\" + FormPrintCarrierLabel.TextBox1.Text + ".pdf"
             ElseIf dataarea = "SII" Then
-                psi.FileName = "\\serv-bkp1\EtiquetaExterna\SII\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\SII\" + FormPrintCarrierLabel.TextBox1.Text + ".pdf"
             ElseIf dataarea = "TBD" Then
-                psi.FileName = "\\serv-bkp1\EtiquetaExterna\TBD\" + FormPesoEtiqueta.lbldct.Text + ".pdf"
+                psi.FileName = "\\serv-bkp1\EtiquetaExterna\TBD\" + FormPrintCarrierLabel.TextBox1.Text + ".pdf"
             Else
                 MessageBox.Show("Error, por favor contactarse con el administrador")
             End If

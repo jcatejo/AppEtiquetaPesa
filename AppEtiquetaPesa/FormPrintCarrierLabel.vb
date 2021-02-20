@@ -9,12 +9,12 @@
     End Sub
 
     Private Sub FormPrintCarrierLabel_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Enter
-        Try
-            reImprimeEtiquetaCarrier()
-            Me.TextBox1.Text = String.Empty
-        Catch ex As Exception
-            MessageBox.Show("Etiqueta no encontrada")
-        End Try
+        ''Try
+        ''reImprimeEtiquetaCarrier()
+        ''Me.TextBox1.Text = String.Empty
+        ''Catch ex As Exception
+        ''MessageBox.Show("Etiqueta no encontrada")
+        ''End Try
     End Sub
 
     Private Sub ButtonPrint_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonPrint.Click
